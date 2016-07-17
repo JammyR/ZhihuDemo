@@ -1,68 +1,81 @@
 package com.example.jammy.zhihudemo.Activity;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.jammy.zhihudemo.Adapter.ListViewAdapter;
-import com.example.jammy.zhihudemo.Bean.StartImg;
-import com.example.jammy.zhihudemo.CallBack.NetCallback;
+import com.example.jammy.zhihudemo.Bean.StoryBase;
+import com.example.jammy.zhihudemo.CallBack.ResultCallback;
 import com.example.jammy.zhihudemo.R;
-import com.example.jammy.zhihudemo.Tools.LogUtil;
 import com.example.jammy.zhihudemo.Tools.NetUtil;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.zhy.http.okhttp.callback.Callback;
-import com.zhy.http.okhttp.callback.StringCallback;
+import com.example.jammy.zhihudemo.Tools.ToastUtil;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import okhttp3.Call;
-import okhttp3.Response;
 
 /**
  * Created by Jammy on 2016/6/15.
+ * 存在的问题
+ * 1.缓存机制
+ * 2.请求失败的重新请求
  */
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
+    String TAG = "MainActivity";
     @Bind(R.id.lv_main)
     ListView lvMain;
     @Bind(R.id.refresh)
     SwipeRefreshLayout refresh;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-        ButterKnife.bind(this);
-        ListViewAdapter adapter = new ListViewAdapter(this);
-        adapter.setList(new ArrayList());
-        lvMain.setAdapter(adapter);
+    ListViewAdapter listViewAdapter;
 
+    @Override
+    protected void initData() {
+        listViewAdapter = new ListViewAdapter(this);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                LogUtil.showLog("刷新了","123");
-                NetUtil.getInstance().getStartImage(new NetCallback<StartImg>(StartImg.class) {
+                NetUtil.getInstance().getLatestNews(new ResultCallback<StoryBase>() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-
+                        ToastUtil.showToast(MainActivity.this, "网络失败");
                     }
 
                     @Override
-                    public void onResponse(StartImg response, int id) {
-                        LogUtil.showLog("作者名字：",response.getText());
-                        LogUtil.showLog("图片地址：",response.getImg());
+                    public void onResponse(StoryBase response, int id) {
+                        Log.v(TAG,response.getDate());
 
+                        Log.v("返回的长度：", String.valueOf(response.getStory().size()));
 
+                        listViewAdapter.setStoryList(response.getStory());
+                        listViewAdapter.setTopList(response.getTop_story());
+
+                        lvMain.setAdapter(listViewAdapter);
+                        refresh.setRefreshing(false);
                     }
-
                 });
-
             }
         });
+
+        lvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this,StoryActivity.class);
+                intent.putExtra("id",String.valueOf(parent.getItemIdAtPosition(position)));
+                startActivity(intent);
+            }
+        });
+
     }
+
+    @Override
+    protected int bindContentViewId() {
+        return R.layout.activity_main;
+    }
+
 }

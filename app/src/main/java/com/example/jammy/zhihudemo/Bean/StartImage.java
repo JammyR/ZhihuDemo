@@ -1,11 +1,11 @@
 package com.example.jammy.zhihudemo.Bean;
 
 /**
- * Created by Jammy on 2016/6/19.
+ * Created by Jammy on 2016/7/16.
  */
-public class StartImg {
-    private String text;//作者
-    private String img;//图片地址
+public class StartImage {
+    String text;
+    String img;
 
     public String getText() {
         return text;

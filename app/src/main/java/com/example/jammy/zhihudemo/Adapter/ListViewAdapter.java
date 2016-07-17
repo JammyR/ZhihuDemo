@@ -1,14 +1,26 @@
 package com.example.jammy.zhihudemo.Adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.view.ViewPager;
+import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.jammy.zhihudemo.Bean.Story;
+import com.example.jammy.zhihudemo.Bean.TopStory;
 import com.example.jammy.zhihudemo.R;
+import com.example.jammy.zhihudemo.Tools.NetUtil;
 import com.jude.rollviewpager.RollPagerView;
+import com.zhy.http.okhttp.callback.BitmapCallback;
 
 import java.util.List;
+
+import okhttp3.Call;
 
 
 /**
@@ -17,7 +29,8 @@ import java.util.List;
 public class ListViewAdapter extends BaseAdapter {
 
     Context context;
-    List list;
+    List<Story> list_story;
+    List<TopStory> list_top;
 
     public ListViewAdapter(Context context) {
         this.context = context;
@@ -25,6 +38,7 @@ public class ListViewAdapter extends BaseAdapter {
 
     /**
      * 得到有多少个布局
+     *
      * @return
      */
     @Override
@@ -34,17 +48,19 @@ public class ListViewAdapter extends BaseAdapter {
 
     /**
      * 得到当前位置应该使用什么布局
+     *
      * @param position
      * @return
      */
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        if (position == 0) return 0;
+        else return 1;
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return list_story.size() + 1;
     }
 
     @Override
@@ -54,36 +70,54 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return list_story.get(position-1).getId();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view;
-        if (position == 0) {
-            view = View.inflate(context,R.layout.viewpager,null);
+        View view = null;
+        if(getItemViewType(position) == 0){
+            //TODO:做ViewPager
+            view = LayoutInflater.from(context).inflate(R.layout.viewpager,null);
             RollPagerView viewPager = (RollPagerView) view.findViewById(R.id.view_paper);
-            viewPager.setAdapter(new ViewPaperAdapter());
-        } else {
-            view = View.inflate(context, R.layout.list_item, null);
+            viewPager.setPlayDelay(2000);
+            ViewPaperAdapter adapter = new ViewPaperAdapter(context);
+            adapter.setList(list_top);
+            viewPager.setAdapter(adapter);
+
+        }else{
+            view = LayoutInflater.from(context).inflate(R.layout.list_item,null);
+            TextView tv = (TextView) view.findViewById(R.id.tv_describes);
+            final ImageView iv = (ImageView) view.findViewById(R.id.iv_icon);
+            tv.setText(list_story.get(position-1).getTitle());
+            NetUtil.getInstance().getImage(list_story.get(position - 1).getImages().get(0), new BitmapCallback() {
+                @Override
+                public void onError(Call call, Exception e, int id) {
+
+                }
+
+                @Override
+                public void onResponse(Bitmap response, int id) {
+                    iv.setImageBitmap(response);
+                }
+            });
         }
         return view;
     }
 
     /**
      * 用于设置内容的list
+     *
      * @param list
      */
-    public void setList(List list){
-        this.list = list;
+    public void setStoryList(List list) {
+        list_story = list;
     }
-
 
     /**
-     * 用于复用的类
+     * 设置顶部ViewPage的List
+     * @param list
      */
-    class ViewHolder{
-
-    }
+    public void setTopList(List list){list_top = list;}
 
 }
