@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.jammy.zhihudemo.Bean.TopStory;
 import com.example.jammy.zhihudemo.R;
 import com.example.jammy.zhihudemo.Tools.NetUtil;
@@ -31,7 +32,7 @@ public class ViewPaperAdapter extends StaticPagerAdapter {
     List<TopStory> list;
     Context context;
 
-    public ViewPaperAdapter(Context context){
+    public ViewPaperAdapter(Context context) {
         this.context = context;
     }
 
@@ -44,24 +45,11 @@ public class ViewPaperAdapter extends StaticPagerAdapter {
      */
     @Override
     public View getView(ViewGroup container, int position) {
-        View view = LayoutInflater.from(context).inflate(R.layout.top_item,null);
-        final ImageView iv = (ImageView) view.findViewById(R.id.iv_top);
+        View view = LayoutInflater.from(context).inflate(R.layout.top_item, null);
+        ImageView iv = (ImageView) view.findViewById(R.id.iv_top);
         TextView tv = (TextView) view.findViewById(R.id.tv_top);
-
-
         tv.setText(list.get(position).getTitle());
-        NetUtil.getInstance().getImage(list.get(position).getImage(), new BitmapCallback() {
-            @Override
-            public void onError(Call call, Exception e, int id) {
-
-            }
-
-            @Override
-            public void onResponse(Bitmap response, int id) {
-                iv.setImageBitmap(response);
-            }
-        });
-
+        Glide.with(context).load(list.get(position).getImage()).fitCenter().into(iv);
         return view;
     }
 
@@ -83,4 +71,6 @@ public class ViewPaperAdapter extends StaticPagerAdapter {
     public void setList(List list) {
         this.list = list;
     }
+
+
 }

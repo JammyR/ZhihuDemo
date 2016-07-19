@@ -24,6 +24,10 @@ import okhttp3.Call;
  * 存在的问题
  * 1.缓存机制
  * 2.请求失败的重新请求
+ * 3.顶部菜单的制作
+ * 4.抽屉菜单的制作(NavigationView)+（DrawerLayout）
+ * 5.清除缓存按钮的制作
+ * 6.图片加载问题使用Gradle
  */
 public class MainActivity extends BaseActivity {
     String TAG = "MainActivity";

@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.jammy.zhihudemo.Bean.Story;
 import com.example.jammy.zhihudemo.Bean.TopStory;
 import com.example.jammy.zhihudemo.R;
@@ -70,37 +71,27 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return list_story.get(position-1).getId();
+        return list_story.get(position - 1).getId();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = null;
-        if(getItemViewType(position) == 0){
+        if (getItemViewType(position) == 0) {
             //TODO:做ViewPager
-            view = LayoutInflater.from(context).inflate(R.layout.viewpager,null);
+            view = LayoutInflater.from(context).inflate(R.layout.viewpager, null);
             RollPagerView viewPager = (RollPagerView) view.findViewById(R.id.view_paper);
             viewPager.setPlayDelay(2000);
             ViewPaperAdapter adapter = new ViewPaperAdapter(context);
             adapter.setList(list_top);
             viewPager.setAdapter(adapter);
 
-        }else{
-            view = LayoutInflater.from(context).inflate(R.layout.list_item,null);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.list_item, null);
             TextView tv = (TextView) view.findViewById(R.id.tv_describes);
-            final ImageView iv = (ImageView) view.findViewById(R.id.iv_icon);
-            tv.setText(list_story.get(position-1).getTitle());
-            NetUtil.getInstance().getImage(list_story.get(position - 1).getImages().get(0), new BitmapCallback() {
-                @Override
-                public void onError(Call call, Exception e, int id) {
-
-                }
-
-                @Override
-                public void onResponse(Bitmap response, int id) {
-                    iv.setImageBitmap(response);
-                }
-            });
+            ImageView iv = (ImageView) view.findViewById(R.id.iv_icon);
+            tv.setText(list_story.get(position - 1).getTitle());
+            Glide.with(context).load(list_story.get(position - 1).getImages().get(0)).fitCenter().into(iv);
         }
         return view;
     }
@@ -116,8 +107,11 @@ public class ListViewAdapter extends BaseAdapter {
 
     /**
      * 设置顶部ViewPage的List
+     *
      * @param list
      */
-    public void setTopList(List list){list_top = list;}
+    public void setTopList(List list) {
+        list_top = list;
+    }
 
 }

@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.jammy.zhihudemo.Bean.StartImage;
 import com.example.jammy.zhihudemo.CallBack.ResultCallback;
 import com.example.jammy.zhihudemo.R;
@@ -82,18 +83,8 @@ public class StartActivity extends BaseActivity {
 
                 @Override
                 public void onResponse(final StartImage response, int id) {
-                    NetUtil.getInstance().getImage(response.getImg(), new BitmapCallback() {
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
-                            Log.v(TAG,"获取图片失败");
-                        }
-
-                        @Override
-                        public void onResponse(Bitmap response, int id) {
-                            iv_cover.setImageBitmap(response);
-                        }
-                    });
                     tv_author.setText(response.getText());
+                    Glide.with(StartActivity.this).load(response.getImg()).fitCenter().into(iv_cover);
                 }
             });
             return null;
