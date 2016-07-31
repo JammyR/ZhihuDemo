@@ -10,9 +10,9 @@
         android:pivotX="50%"
         android:pivotY="50%"/>
     <!--从2S开始，持续1S的渐变为空的过程-->
-    <alpha
-        android:duration="1000"
-        android:fromAlpha="1"
-        android:toAlpha="0"
-        android:startOffset="2000"/>
+    <!--<alpha-->
+        <!--android:duration="1000"-->
+        <!--android:fromAlpha="1"-->
+        <!--android:toAlpha="0"-->
+        <!--android:startOffset="2000"/>-->
 </set>

@@ -2,11 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.jude.rollviewpager.RollPagerView
+    <!--<com.jude.rollviewpager.RollPagerView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="250dp"-->
+    <!--android:id ="@+id/view_paper"-->
+    <!--&gt;-->
+
+<!--</com.jude.rollviewpager.RollPagerView>-->
+
+
+    <com.example.jammy.zhihudemo.weight.RollView
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:id ="@+id/view_paper"
         >
 
-    </com.jude.rollviewpager.RollPagerView>
+    </com.example.jammy.zhihudemo.weight.RollView>
+
 </LinearLayout>

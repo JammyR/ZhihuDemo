@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.jammy.zhihudemo.API.ZhihuDemo;
 import com.example.jammy.zhihudemo.Bean.StartImage;
 import com.example.jammy.zhihudemo.CallBack.ResultCallback;
 import com.example.jammy.zhihudemo.R;
@@ -19,6 +20,16 @@ import com.zhy.http.okhttp.callback.BitmapCallback;
 
 import butterknife.Bind;
 import okhttp3.Call;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
+import rx.Scheduler;
+import rx.SingleSubscriber;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Jammy on 2016/7/9.
@@ -39,6 +50,31 @@ public class StartActivity extends BaseActivity {
 
     @Override
     protected void initData() {
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .baseUrl(NetUtil.BASE_ADDRESS)
+                .build();
+        ZhihuDemo zhihuDemo = retrofit.create(ZhihuDemo.class);
+
+        zhihuDemo.startInfo().subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleSubscriber<StartImage>() {
+
+                    @Override
+                    public void onSuccess(StartImage startImage) {
+                        tv_author.setText(startImage.getText());
+                        Glide.with(StartActivity.this).load(startImage.getImg()).fitCenter().into(iv_cover);
+                    }
+
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                });
+
         animation = AnimationUtils.loadAnimation(this, R.anim.anim_start_page);
         animation.setFillAfter(true);//设置为true  那么在结束时停留在结束阶段
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -60,8 +96,8 @@ public class StartActivity extends BaseActivity {
             }
         });
         iv_cover.setAnimation(animation);
-
-        new CheckImage().execute();
+        //老版网络请求
+//        new CheckImage().execute();
 
     }
 
@@ -71,23 +107,24 @@ public class StartActivity extends BaseActivity {
     }
 
 
-    class CheckImage extends AsyncTask {
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-            NetUtil.getInstance().getStartImage(new ResultCallback<StartImage>() {
-                @Override
-                public void onError(Call call, Exception e, int id) {
-                    Log.v(TAG,"获取封面信息失败");
-                }
-
-                @Override
-                public void onResponse(final StartImage response, int id) {
-                    tv_author.setText(response.getText());
-                    Glide.with(StartActivity.this).load(response.getImg()).fitCenter().into(iv_cover);
-                }
-            });
-            return null;
-        }
-    }
+    ///老版Okhttp网络请求
+//    class CheckImage extends AsyncTask {
+//
+//        @Override
+//        protected Object doInBackground(Object[] params) {
+//            NetUtil.getInstance().getStartImage(new ResultCallback<StartImage>() {
+//                @Override
+//                public void onError(Call call, Exception e, int id) {
+//                    Log.v(TAG,"获取封面信息失败");
+//                }
+//
+//                @Override
+//                public void onResponse(final StartImage response, int id) {
+//                    tv_author.setText(response.getText());
+//                    Glide.with(StartActivity.this).load(response.getImg()).fitCenter().into(iv_cover);
+//                }
+//            });
+//            return null;
+//        }
+//    }
 }
