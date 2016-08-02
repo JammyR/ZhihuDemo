@@ -1,9 +1,6 @@
 package com.example.jammy.zhihudemo.Activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -12,23 +9,16 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.jammy.zhihudemo.API.ZhihuDemo;
 import com.example.jammy.zhihudemo.Bean.StartImage;
-import com.example.jammy.zhihudemo.CallBack.ResultCallback;
 import com.example.jammy.zhihudemo.R;
 import com.example.jammy.zhihudemo.Tools.NetUtil;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.BitmapCallback;
+import com.example.jammy.zhihudemo.Tools.SPUtil;
 
 import butterknife.Bind;
-import okhttp3.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
-import rx.Scheduler;
 import rx.SingleSubscriber;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -51,6 +41,14 @@ public class StartActivity extends BaseActivity {
     @Override
     protected void initData() {
 
+        String author = (String) SPUtil.getData(this,"startImage","text","");
+        String image_url = (String) SPUtil.getData(this,"startImage","img","");
+        if(author.equals("")&&author.equals("")){
+
+        }else{
+            tv_author.setText(author);
+            Glide.with(this).load(image_url).fitCenter().into(iv_cover);
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
@@ -67,6 +65,7 @@ public class StartActivity extends BaseActivity {
                     public void onSuccess(StartImage startImage) {
                         tv_author.setText(startImage.getText());
                         Glide.with(StartActivity.this).load(startImage.getImg()).fitCenter().into(iv_cover);
+                        SPUtil.saveData(StartActivity.this,"startImage",startImage);
                     }
 
                     @Override
@@ -96,9 +95,6 @@ public class StartActivity extends BaseActivity {
             }
         });
         iv_cover.setAnimation(animation);
-        //老版网络请求
-//        new CheckImage().execute();
-
     }
 
     @Override
@@ -106,25 +102,4 @@ public class StartActivity extends BaseActivity {
         return R.layout.activity_start;
     }
 
-
-    ///老版Okhttp网络请求
-//    class CheckImage extends AsyncTask {
-//
-//        @Override
-//        protected Object doInBackground(Object[] params) {
-//            NetUtil.getInstance().getStartImage(new ResultCallback<StartImage>() {
-//                @Override
-//                public void onError(Call call, Exception e, int id) {
-//                    Log.v(TAG,"获取封面信息失败");
-//                }
-//
-//                @Override
-//                public void onResponse(final StartImage response, int id) {
-//                    tv_author.setText(response.getText());
-//                    Glide.with(StartActivity.this).load(response.getImg()).fitCenter().into(iv_cover);
-//                }
-//            });
-//            return null;
-//        }
-//    }
 }
