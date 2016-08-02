@@ -14,7 +14,6 @@ import com.example.jammy.zhihudemo.R;
 import com.example.jammy.zhihudemo.Tools.NetUtil;
 
 import butterknife.Bind;
-import okhttp3.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -29,8 +28,6 @@ import rx.schedulers.Schedulers;
  * 2.数据存储的问题，使用数据库？
  */
 public class StoryActivity extends BaseActivity {
-
-
     WebSettings webSettings;
     @Bind(R.id.webView)
     WebView webView;
